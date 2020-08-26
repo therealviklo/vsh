@@ -58,7 +58,7 @@ ExecuteStatus execute(const char* str)
 bool currDir(char* buffer, size_t size)
 {
 	static const char* temp = "C:\\test\\te";
-	if (size < (strlen(temp) + 1) * sizeof(char))
+	if (size >= (strlen(temp) + 1) * sizeof(char))
 	{
 		memcpy(buffer, temp, size);
 		return true;
@@ -69,7 +69,7 @@ bool currDir(char* buffer, size_t size)
 bool currUser(char* buffer, size_t size)
 {
 	static const char* temp = "viklo";
-	if (size < (strlen(temp) + 1) * sizeof(char))
+	if (size >= (strlen(temp) + 1) * sizeof(char))
 	{
 		memcpy(buffer, temp, size);
 		return true;
