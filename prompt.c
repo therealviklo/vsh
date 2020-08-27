@@ -9,42 +9,48 @@ void printPrompt(void)
 	}
 
 	bool usernamePrinted = false;
-	char currUsername[1024];
-	if (currUser(currUsername, sizeof(currUsername) / sizeof(*currUsername)))
+	if (userOn)
 	{
-		setColour(CLR_LIGHTRED);
-		printf("%s", currUsername);
-		usernamePrinted = true;
+		char currUsername[1024];
+		if (currUser(currUsername, sizeof(currUsername) / sizeof(*currUsername)))
+		{
+			setColour(CLR_LIGHTRED);
+			printf("%s", currUsername);
+			usernamePrinted = true;
+		}
 	}
 
-	char currPath[1024];
-	if (currDir(currPath, sizeof(currPath) / sizeof(*currPath)))
+	if (pathOn)
 	{
-		if (usernamePrinted)
+		char currPath[1024];
+		if (currDir(currPath, sizeof(currPath) / sizeof(*currPath)))
 		{
-			setColour(CLR_WOB);
-			printf("|");
-		}
-		
-		setColour(CLR_LIGHTBLUE);
-		for (char* i = currPath; *i != '\0'; i++)
-		{
-			switch (*i)
+			if (usernamePrinted)
 			{
-				case '/':
-				case '\\':
-				case ':':
+				setColour(CLR_WOB);
+				printf("|");
+			}
+			
+			setColour(CLR_LIGHTBLUE);
+			for (char* i = currPath; *i != '\0'; i++)
+			{
+				switch (*i)
 				{
-					setColour(CLR_WOB);
-					printf("%c", *i);
-					setColour(CLR_LIGHTGREEN);
+					case '/':
+					case '\\':
+					case ':':
+					{
+						setColour(CLR_WOB);
+						printf("%c", *i);
+						setColour(CLR_LIGHTGREEN);
+					}
+					break;
+					default:
+					{
+						printf("%c", *i);
+					}
+					break;
 				}
-				break;
-				default:
-				{
-					printf("%c", *i);
-				}
-				break;
 			}
 		}
 	}
