@@ -97,3 +97,13 @@ bool currUser(char* buffer, size_t size)
 	}
 	return false;
 }
+
+void psInit(void)
+{
+	// Inget
+}
+
+void psUninit(void)
+{
+	// Inget
+}

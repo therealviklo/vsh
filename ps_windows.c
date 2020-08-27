@@ -76,3 +76,16 @@ bool currUser(char* buffer, size_t size)
 	}
 	return false;
 }
+
+void psInit(void)
+{
+	SetConsoleCP(CP_UTF8);
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+}
+
+void psUninit(void)
+{
+	// Inget
+}

@@ -16,3 +16,6 @@ ExecuteStatus execute(const char* str);
 bool currDir(char* buffer, size_t size);
 // True om den lyckades
 bool currUser(char* buffer, size_t size);
+
+void psInit(void);
+void psUninit(void);
