@@ -16,7 +16,10 @@ int executeStr(const char* str)
 	}
 	else if (strcmp(str, "ret") == 0)
 	{
-		printf("\x1b[32mvsh\x1b[0m: %i\n", exitStat);
+		setColour(CLR_DARKGREEN);
+		printf("vsh");
+		setColour(CLR_WOB);
+		printf(": %i\n", exitStat);
 		return 0;
 	}
 	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
@@ -32,17 +35,26 @@ int executeStr(const char* str)
 	{
 		case ESE_INVALID:
 		{
-			printf("\x1b[31mvsh\x1b[0m: invalid command\n");
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": invalid command\n");
 		}
 		break;
 		case ESE_MEM:
 		{
-			printf("\x1b[31mvsh\x1b[0m: memory error\n");
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": memory error\n");
 		}
 		break;
 		case ESE_ABNORMALEXIT:
 		{
-			printf("\x1b[31mvsh\x1b[0m: program exited abnormally\n");
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": program exited abnormally\n");
 		}
 		break;
 		default:
