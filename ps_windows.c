@@ -57,12 +57,8 @@ ExecuteStatus execute(const char* str)
 
 bool currDir(char* buffer, size_t size)
 {
-	static const char* temp = "C:\\test\\te";
-	if (size >= (strlen(temp) + 1) * sizeof(char))
-	{
-		memcpy(buffer, temp, size);
-		return true;
-	}
+	DWORD written = GetCurrentDirectory(size, buffer);
+	if (written != 0 && written <= size) return true;
 	return false;
 }
 
