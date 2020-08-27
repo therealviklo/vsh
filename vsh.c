@@ -11,6 +11,7 @@
 #include "prompt.c"
 #include "execcl.c"
 #include "ret.c"
+#include "utils.c"
 
 int main()
 {
@@ -28,7 +29,7 @@ int main()
 				SSfree(ss);
 				break;
 			}
-			exitStat = executeStr(ss->str);
+			executeStr(ss->str);
 			SSfree(ss);
 		}
 		else

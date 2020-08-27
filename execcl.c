@@ -41,12 +41,14 @@ void executeStr(const char* str)
 	if (strcmp(str, "ret on") == 0)
 	{
 		retOn = true;
-		return 0;
+		exitStat = 0;
+		return;
 	}
 	else if (strcmp(str, "ret off") == 0)
 	{
 		retOn = false;
-		return 0;
+		exitStat = 0;
+		return;
 	}
 	else if (strcmp(str, "ret") == 0)
 	{
@@ -54,14 +56,15 @@ void executeStr(const char* str)
 		printf("vsh");
 		setColour(CLR_WOB);
 		printf(": %i\n", exitStat);
-		return 0;
+		exitStat = 0;
+		return;
 	}
 	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
 	{
 #ifdef VSH_LINUX
 		processExecuteStatus(executeStr("ls --color=auto"));
 #endif /* VSH_LINUX */
-		return 0;
+		return;
 	}
 
 	processExecuteStatus(execute(str));
