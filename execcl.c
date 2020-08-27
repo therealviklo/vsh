@@ -9,14 +9,21 @@ int executeStr(const char* str)
 		retOn = true;
 		return 0;
 	}
-	if (strcmp(str, "ret off") == 0)
+	else if (strcmp(str, "ret off") == 0)
 	{
 		retOn = false;
 		return 0;
 	}
-	if (strcmp(str, "ret") == 0)
+	else if (strcmp(str, "ret") == 0)
 	{
-		printf("%i\n", exitStat);
+		printf("\x1b[32mvsh\x1b[0m: %i\n", exitStat);
+		return 0;
+	}
+	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
+	{
+#ifdef VSH_LINUX
+		executeStr("ls --color=auto");
+#endif /* VSH_LINUX */
 		return 0;
 	}
 
