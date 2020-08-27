@@ -8,18 +8,24 @@ void printPrompt(void)
 		printf("[%i] ", exitStat);
 	}
 
+	bool usernamePrinted = false;
 	char currUsername[1024];
 	if (currUser(currUsername, sizeof(currUsername) / sizeof(*currUsername)))
 	{
 		setColour(CLR_LIGHTRED);
 		printf("%s", currUsername);
-		setColour(CLR_WOB);
-		printf(":");
+		usernamePrinted = true;
 	}
 
 	char currPath[1024];
 	if (currDir(currPath, sizeof(currPath) / sizeof(*currPath)))
 	{
+		if (usernamePrinted)
+		{
+			setColour(CLR_WOB);
+			printf("|");
+		}
+		
 		setColour(CLR_LIGHTBLUE);
 		for (char* i = currPath; *i != '\0'; i++)
 		{

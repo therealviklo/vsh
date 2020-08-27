@@ -62,7 +62,7 @@ void executeStr(const char* str)
 	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
 	{
 #ifdef VSH_LINUX
-		processExecuteStatus(executeStr("ls --color=auto"));
+		processExecuteStatus(execute("ls --color=auto"));
 #endif /* VSH_LINUX */
 		return;
 	}
