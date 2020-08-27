@@ -98,6 +98,11 @@ bool currUser(char* buffer, size_t size)
 	return false;
 }
 
+bool changeDirectory(const char* dir)
+{
+	return chdir(dir) != -1;
+}
+
 void psInit(void)
 {
 	// Inget

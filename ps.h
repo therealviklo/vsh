@@ -39,6 +39,8 @@ bool currDir(char* buffer, size_t size);
 // True om den lyckades
 bool currUser(char* buffer, size_t size);
 
+bool changeDirectory(const char* dir);
+
 void psInit(void);
 void psUninit(void);
 

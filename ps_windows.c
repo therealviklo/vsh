@@ -68,6 +68,11 @@ bool currUser(char* buffer, size_t size)
 	return GetUserNameA(buffer, &s);
 }
 
+bool changeDirectory(const char* dir)
+{
+	return SetCurrentDirectoryA(dir);
+}
+
 void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);

@@ -110,6 +110,23 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+	else if ((start = startsWith(str, "cd ")))
+	{
+		if (changeDirectory(start))
+		{
+			exitStat = 0;
+			return;
+		}
+		else
+		{
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": unable to enter directory\n");
+			exitStat = 0;
+			return;
+		}
+	}
 	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
 	{
 #ifdef VSH_LINUX
