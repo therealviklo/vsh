@@ -64,13 +64,8 @@ bool currDir(char* buffer, size_t size)
 
 bool currUser(char* buffer, size_t size)
 {
-	static const char* temp = "viklo";
-	if (size >= (strlen(temp) + 1) * sizeof(char))
-	{
-		memcpy(buffer, temp, size);
-		return true;
-	}
-	return false;
+	DWORD s = (DWORD)size;
+	return GetUserNameA(buffer, &s);
 }
 
 void psInit(void)
