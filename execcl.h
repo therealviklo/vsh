@@ -1,4 +1,5 @@
 ﻿#pragma once
 #include "ps.h"
 
-int executeStr(const char* str);
+void processExecuteStatus(ExecuteStatus es);
+void executeStr(const char* str);
