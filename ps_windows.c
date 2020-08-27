@@ -81,7 +81,7 @@ void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), 0x4);
 }
 
 void psUninit(void)
