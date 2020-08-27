@@ -14,6 +14,7 @@
 
 int main()
 {
+	psInit();
 	while (1)
 	{
 		SS* ss = SScreate();
@@ -35,5 +36,6 @@ int main()
 			break;
 		}
 	}
+	psUninit();
 	return 0;
 }
