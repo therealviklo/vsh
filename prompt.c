@@ -11,7 +11,7 @@ void printPrompt(void)
 	char currUsername[1024];
 	if (currUser(currUsername, sizeof(currUsername) / sizeof(*currUsername)))
 	{
-		setColour(CLR_BRIGHTRED);
+		setColour(CLR_LIGHTRED);
 		printf("%s", currUsername);
 		setColour(CLR_WOB);
 		printf(":");
