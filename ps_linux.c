@@ -107,3 +107,8 @@ void psUninit(void)
 {
 	// Inget
 }
+
+void setColour(Colour colour)
+{
+	printf("\x1b[%im", (int)colour);
+}

@@ -81,10 +81,14 @@ void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), 0x4);
 }
 
 void psUninit(void)
 {
 	// Inget
+}
+
+void setColour(Colour colour)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colour);
 }
