@@ -103,6 +103,11 @@ bool changeDirectory(const char* dir)
 	return chdir(dir) != -1;
 }
 
+bool listDirectory(void)
+{
+	return execute("ls --color=auto").error == ESE_SUCCESS;
+}
+
 void psInit(void)
 {
 	// Inget

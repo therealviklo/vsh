@@ -40,6 +40,7 @@ bool currDir(char* buffer, size_t size);
 bool currUser(char* buffer, size_t size);
 
 bool changeDirectory(const char* dir);
+bool listDirectory(void);
 
 void psInit(void);
 void psUninit(void);

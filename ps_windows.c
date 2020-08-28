@@ -73,6 +73,26 @@ bool changeDirectory(const char* dir)
 	return SetCurrentDirectoryA(dir);
 }
 
+bool listDirectory(void)
+{
+	WIN32_FIND_DATAA findData;
+	HANDLE handle = FindFirstFileA(".\\*", &findData);
+	if (handle == INVALID_HANDLE_VALUE)
+	{
+		if (GetLastError() == ERROR_FILE_NOT_FOUND)
+		{
+			return true;
+		}
+		return false;
+	}
+	do
+	{
+		printf("%s\n", (const char*)findData.cFileName);
+	} while (FindNextFileA(handle, &findData));
+	FindClose(handle);
+	return true;
+}
+
 void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
