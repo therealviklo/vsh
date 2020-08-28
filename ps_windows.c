@@ -87,7 +87,19 @@ bool listDirectory(void)
 	}
 	do
 	{
-		printf("%s\n", (const char*)findData.cFileName);
+		if (strcmp(findData.cFileName, ".") != 0 &&
+			strcmp(findData.cFileName, "..") != 0)
+		{
+			if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				setColour(CLR_LIGHTBLUE);
+			}
+			else
+			{
+				setColour(CLR_WOB);
+			}
+			printf("%s\n", (const char*)findData.cFileName);
+		}
 	} while (FindNextFileA(handle, &findData));
 	FindClose(handle);
 	return true;
