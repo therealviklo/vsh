@@ -11,7 +11,7 @@
 #define CLR_LIGHTBLUE 94
 #define CLR_LIGHTCYAN 96
 typedef uint8_t Colour;
-#endif /* VHS_LINUX */
+#else /* VHS_LINUX */
 #ifdef VSH_WINDOWS
 #define CLR_WOB (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY)
 #define CLR_DARKRED (FOREGROUND_RED)
@@ -22,6 +22,7 @@ typedef uint8_t Colour;
 #define CLR_LIGHTCYAN (FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY)
 typedef uint16_t Colour;
 #endif /* VSH_WINDOWS */
+#endif /* VHS_LINUX */
 
 typedef struct {
 	int ret;

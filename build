@@ -1,2 +1,0 @@
-#!/bin/sh
-clang vsh.c -o vsh -DVSH_LINUX

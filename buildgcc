@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc vsh.c -o vsh -DVSH_LINUX -O2
