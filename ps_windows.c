@@ -160,7 +160,7 @@ void clearScreen(void)
 {
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	DWORD charsWritten;
-	CONSOLE_SCREEN_BUFFER_INFOA info;
+	CONSOLE_SCREEN_BUFFER_INFO info;
 	
 	if(!GetConsoleScreenBufferInfo(handle, &info)) return;
 
