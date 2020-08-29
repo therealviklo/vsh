@@ -136,7 +136,7 @@ bool createDirectory(const char* dir)
 
 bool deleteDirectory(const char* dir)
 {
-	return DeleteDirectoryA(dir);
+	return RemoveDirectoryA(dir);
 }
 
 void psInit(void)
