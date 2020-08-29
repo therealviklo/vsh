@@ -25,6 +25,7 @@ int main()
 			int c = '\0';
 			while ((c = getchar()) != '\n' && c != EOF) SSadd(ss, c);
 			setColour(CLR_WOB);
+			fflush(stdout);
 			if (strcmp(ss->str, "exit") == 0)
 			{
 				SSfree(ss);
