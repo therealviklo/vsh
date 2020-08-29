@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pwd.h>
+#include <signal.h>
 #include "cl.h"
 
 ExecuteStatus execute_cl(CL* cl)
@@ -121,7 +122,7 @@ bool deleteFile(const char* rest)
 			free(buffer);
 			return es.error == ESE_SUCCESS;
 		}
-		
+
 		setColour(CLR_DARKRED);
 		printf("vsh");
 		setColour(CLR_WOB);
@@ -142,7 +143,7 @@ bool deleteFile(const char* rest)
 
 void psInit(void)
 {
-	// Inget
+	signal(SIGINT, SIG_IGN);
 }
 
 void psUninit(void)

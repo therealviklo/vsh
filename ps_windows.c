@@ -5,6 +5,7 @@
 
 ExecuteStatus execute(const char* str)
 {
+	SetConsoleCtrlHandler(NULL, FALSE);
 	size_t bufferSize = sizeof(char) * (strlen(str) + 1);
 	char* buffer = malloc(bufferSize);
 	if (buffer)
@@ -44,14 +45,17 @@ ExecuteStatus execute(const char* str)
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
 			free(buffer);
+			SetConsoleCtrlHandler(NULL, TRUE);
 			return r;
 		}
 		else
 		{
 			free(buffer);
+			SetConsoleCtrlHandler(NULL, TRUE);
 			return (ExecuteStatus){0, ESE_INVALID};
 		}
 	}
+	SetConsoleCtrlHandler(NULL, TRUE);
 	return (ExecuteStatus){0, ESE_MEM};
 }
 
@@ -114,6 +118,7 @@ void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCtrlHandler(NULL, TRUE);
 }
 
 void psUninit(void)
