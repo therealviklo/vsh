@@ -168,7 +168,7 @@ void clearScreen(void)
 		handle,
 		' ',
 		info.dwSize.X * info.dwSize.Y,
-		{0, 0},
+		(COORD){0, 0},
 		&charsWritten
 	)) return;
 
@@ -176,9 +176,9 @@ void clearScreen(void)
 		handle,
 		FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY,
 		info.dwSize.X * info.dwSize.Y,
-		{0, 0},
+		(COORD){0, 0},
 		&charsWritten
 	)) return;
 
-	SetConsoleCursorPosition(handle, {0, 0});
+	SetConsoleCursorPosition(handle, (COORD){0, 0});
 }
