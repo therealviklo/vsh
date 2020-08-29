@@ -178,6 +178,23 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+	else if ((start = startsWith(str, "mk ")))
+	{
+		FILE* file = fopen(start, "a");
+		if (file)
+		{
+			fclose(file);
+		}
+		else
+		{
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": unable to create file\n");
+		}
+		exitStat = 0;
+		return;
+	}
 
 	processExecuteStatus(execute(str));
 }
