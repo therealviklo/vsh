@@ -54,3 +54,5 @@ void psInit(void);
 void psUninit(void);
 
 void setColour(Colour colour);
+
+void clearScreen(void);

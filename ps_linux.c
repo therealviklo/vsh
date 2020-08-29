@@ -157,3 +157,8 @@ void setColour(Colour colour)
 {
 	printf("\x1b[%im", (int)colour);
 }
+
+void clearScreen(void)
+{
+	execute("clear");
+}

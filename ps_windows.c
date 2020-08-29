@@ -155,3 +155,30 @@ void setColour(Colour colour)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colour);
 }
+
+void clearScreen(void)
+{
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD charsWritten;
+	CONSOLE_SCREEN_BUFFER_INFOA info;
+	
+	if(!GetConsoleScreenBufferInfo(handle, &info)) return;
+
+	if (!FillConsoleOutputCharacter(
+		handle,
+		' ',
+		info.dwSize.X * info.dwSize.Y,
+		{0, 0},
+		&charsWritten
+	)) return;
+
+	if (!FillConsoleOutputAttribute(
+		handle,
+		FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY,
+		info.dwSize.X * info.dwSize.Y,
+		{0, 0},
+		&charsWritten
+	)) return;
+
+	SetConsoleCursorPosition(handle, {0, 0});
+}

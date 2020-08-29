@@ -221,6 +221,12 @@ void executeStr(const char* str)
 		return;
 	}
 #endif /* VSH_WINDOWS */
+	else if (strcmp(str, "cls") == 0 || strcmp(str, "clear") == 0)
+	{
+		clearScreen();
+		exitStat = 0;
+		return;
+	}
 
 	processExecuteStatus(execute(str));
 }
