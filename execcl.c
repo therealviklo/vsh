@@ -195,6 +195,32 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+#ifdef VSH_WINDOWS
+	else if ((start = startsWith(str, "rmdir ")))
+	{
+		if (!deleteDirectory(start))
+		{
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": unable to delete directory\n");
+		}
+		exitStat = 0;
+		return;
+	}
+	else if ((start = startsWith(str, "mkdir ")))
+	{
+		if (!createDirectory(start))
+		{
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": unable to create directory\n");
+		}
+		exitStat = 0;
+		return;
+	}
+#endif /* VSH_WINDOWS */
 
 	processExecuteStatus(execute(str));
 }

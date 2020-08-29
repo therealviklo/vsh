@@ -45,6 +45,11 @@ bool listDirectory(void);
 
 bool deleteFile(const char* rest);
 
+#ifdef VSH_WINDOWS
+bool createDirectory(const char* dir);
+bool deleteDirectory(const char* dir);
+#endif /* VSH_WINDOWS */
+
 void psInit(void);
 void psUninit(void);
 

@@ -129,6 +129,16 @@ bool deleteFile(const char* rest)
 	return DeleteFileA(rest);
 }
 
+bool createDirectory(const char* dir)
+{
+	return CreateDirectoryA(dir, NULL);
+}
+
+bool deleteDirectory(const char* dir)
+{
+	return DeleteDirectoryA(dir);
+}
+
 void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
