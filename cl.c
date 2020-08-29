@@ -8,10 +8,19 @@ char* CLcreate_extractParam(const char** str)
 		size_t size = 1;
 		char c = '\0';
 		
-		bool quoteMode = false;
+		enum {
+			QM_NOQUOTE,
+			QM_DOUBLEQUOTE,
+			QM_SINGLEQUOTE
+		} quoteMode = QM_NOQUOTE;
 		if (**str == '"')
 		{
-			quoteMode = true;
+			quoteMode = QM_DOUBLEQUOTE;
+			(*str)++;
+		}
+		else if (**str == '\'')
+		{
+			quoteMode = QM_SINGLEQUOTE;
 			(*str)++;
 		}
 
@@ -20,10 +29,15 @@ char* CLcreate_extractParam(const char** str)
 			c = *((*str)++); // Sätt c till det tecken som *str pekar till och gör så att *str pekar till nästa tecken.
 			if (c == '\0')
 			{
+				if (quoteMode)
+				{
+					free(buf);
+					return NULL;
+				}
 				(*str)--;
 				break;
 			}
-			else if ((quoteMode && c == '"') || (isspace(c) && !quoteMode))
+			else if ((quoteMode == QM_SINGLEQUOTE && c == '\'') || (quoteMode == QM_DOUBLEQUOTE && c == '"') || (isspace(c) && !quoteMode))
 			{
 				break;
 			}

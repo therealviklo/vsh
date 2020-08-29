@@ -180,7 +180,7 @@ void executeStr(const char* str)
 	}
 	else if ((start = startsWith(str, "mk ")))
 	{
-		FILE* file = fopen(start, "a");
+		FILE* file = fopen(start, "ab");
 		if (file)
 		{
 			fclose(file);
