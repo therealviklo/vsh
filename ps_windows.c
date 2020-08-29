@@ -2,10 +2,22 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+bool otherProcessShallRun = false;
+
+BOOL WINAPI CtrlCHandlerRoutine(DWORD ctrlType)
+{
+	if (ctrlType == CTRL_C_EVENT)
+	{
+		otherProcessShallRun = false;
+		return TRUE;
+	}
+	return FALSE;
+}
 
 ExecuteStatus execute(const char* str)
 {
-	SetConsoleCtrlHandler(NULL, FALSE);
 	size_t bufferSize = sizeof(char) * (strlen(str) + 1);
 	char* buffer = malloc(bufferSize);
 	if (buffer)
@@ -28,9 +40,10 @@ ExecuteStatus execute(const char* str)
 			&pi
 		))
 		{
+			otherProcessShallRun = true;
 			DWORD exitCode = STILL_ACTIVE;
 			ExecuteStatus r = {0, ESE_INVALID};
-			while (1)
+			while (otherProcessShallRun)
 			{
 				if (!GetExitCodeProcess(pi.hProcess, &exitCode)) break;
 				if (exitCode != STILL_ACTIVE)
@@ -45,17 +58,14 @@ ExecuteStatus execute(const char* str)
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
 			free(buffer);
-			SetConsoleCtrlHandler(NULL, TRUE);
 			return r;
 		}
 		else
 		{
 			free(buffer);
-			SetConsoleCtrlHandler(NULL, TRUE);
 			return (ExecuteStatus){0, ESE_INVALID};
 		}
 	}
-	SetConsoleCtrlHandler(NULL, TRUE);
 	return (ExecuteStatus){0, ESE_MEM};
 }
 
@@ -118,7 +128,7 @@ void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleCtrlHandler(NULL, TRUE);
+	SetConsoleCtrlHandler(CtrlCHandlerRoutine, TRUE);
 }
 
 void psUninit(void)
