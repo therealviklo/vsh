@@ -24,6 +24,7 @@ int main()
 			printPrompt();
 			int c = '\0';
 			while ((c = getchar()) != '\n' && c != EOF) SSadd(ss, c);
+			setColour(CLR_WOB);
 			if (strcmp(ss->str, "exit") == 0)
 			{
 				SSfree(ss);

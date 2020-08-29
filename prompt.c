@@ -31,7 +31,7 @@ void printPrompt(void)
 				printf("|");
 			}
 			
-			setColour(CLR_LIGHTBLUE);
+			setColour(CLR_LIGHTGREEN);
 			for (char* i = currPath; *i != '\0'; i++)
 			{
 				switch (*i)
@@ -42,7 +42,7 @@ void printPrompt(void)
 					{
 						setColour(CLR_WOB);
 						printf("%c", *i);
-						setColour(CLR_LIGHTGREEN);
+						setColour(CLR_LIGHTBLUE);
 					}
 					break;
 					default:
@@ -56,4 +56,5 @@ void printPrompt(void)
 	}
 	setColour(CLR_WOB);
 	printf("> ");
+	setColour(CLR_LIGHTGREEN);
 }
