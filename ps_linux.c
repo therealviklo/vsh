@@ -7,6 +7,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include "cl.h"
+#include <stdbool.h>
 
 ExecuteStatus execute_cl(CL* cl)
 {
@@ -14,6 +15,7 @@ ExecuteStatus execute_cl(CL* cl)
 	static const struct timespec ts = {0, 1};
 	if ((pid = fork()) == 0)
 	{
+		signal(SIGINT, SIG_DFL);
 		execvp(cl->path, cl->argv);
 		exit(127);
 	}
