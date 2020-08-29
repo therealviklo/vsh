@@ -139,6 +139,45 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+#ifdef VSH_LINUX
+	else if ((start = startsWith(str, "ls ")) || (start = startsWith(str, "dir ")))
+	{
+		size_t bufferLen = (strlen(str) + sizeof(" --color=auto") / sizeof(char) + 1);
+		char* buffer = malloc(sizeof(char) * bufferLen);
+		if (buffer)
+		{
+			int r = snprintf(buffer, bufferLen, "ls --color=auto %s", start);
+			if (r >= 0 && r < bufferLen)
+			{
+				processExecuteStatus(execute(buffer));
+			}
+			else
+			{
+				processExecuteStatus((ExecuteStatus){0, ESE_MEM});
+			}
+
+			free(buffer);
+		}
+		else
+		{
+			processExecuteStatus((ExecuteStatus){0, ESE_MEM});
+		}
+		exitStat = 0;
+		return;
+	}
+#endif /* VSH_LINUX */
+	else if ((start = startsWith(str, "rm ")) || (start = startsWith(str, "del ")))
+	{
+		if (!deleteFile(start))
+		{
+			setColour(CLR_DARKRED);
+			printf("vsh");
+			setColour(CLR_WOB);
+			printf(": unable to delete file\n");
+		}
+		exitStat = 0;
+		return;
+	}
 
 	processExecuteStatus(execute(str));
 }

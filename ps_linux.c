@@ -108,6 +108,38 @@ bool listDirectory(void)
 	return execute("ls --color=auto").error == ESE_SUCCESS;
 }
 
+bool deleteFile(const char* rest)
+{
+	size_t bufLen = sizeof("rm ") / sizeof(char) + strlen(rest) + 1;
+	char* buffer = malloc(sizeof(char) * bufLen);
+	if (buffer)
+	{
+		int r = snprintf(buffer, bufLen, "rm %s", rest);
+		if (r >= 0 && r < bufLen)
+		{
+			ExecuteStatus es = execute(buffer);
+			free(buffer);
+			return es.error == ESE_SUCCESS;
+		}
+		
+		setColour(CLR_DARKRED);
+		printf("vsh");
+		setColour(CLR_WOB);
+		printf(": memory error\n");
+		free(buffer);
+		return false;
+	}
+	else
+	{
+		setColour(CLR_DARKRED);
+		printf("vsh");
+		setColour(CLR_WOB);
+		printf(": memory error\n");
+		return false;
+	}
+	return true;
+}
+
 void psInit(void)
 {
 	// Inget

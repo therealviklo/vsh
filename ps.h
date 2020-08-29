@@ -43,6 +43,8 @@ bool currUser(char* buffer, size_t size);
 bool changeDirectory(const char* dir);
 bool listDirectory(void);
 
+bool deleteFile(const char* rest);
+
 void psInit(void);
 void psUninit(void);
 

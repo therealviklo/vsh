@@ -105,6 +105,11 @@ bool listDirectory(void)
 	return true;
 }
 
+bool deleteFile(const char* rest)
+{
+	return DeleteFileA(rest);
+}
+
 void psInit(void)
 {
 	SetConsoleCP(CP_UTF8);
