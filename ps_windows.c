@@ -43,12 +43,17 @@ ExecuteStatus execute(const char* str)
 			otherProcessShallRun = true;
 			DWORD exitCode = STILL_ACTIVE;
 			ExecuteStatus r = {0, ESE_INVALID};
-			while (otherProcessShallRun)
+			while (1)
 			{
 				if (!GetExitCodeProcess(pi.hProcess, &exitCode)) break;
 				if (exitCode != STILL_ACTIVE)
 				{
 					r.ret = exitCode;
+					r.error = ESE_SUCCESS;
+					break;
+				}
+				if (!otherProcessShallRun)
+				{
 					r.error = ESE_SUCCESS;
 					break;
 				}
