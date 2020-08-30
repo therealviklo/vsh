@@ -7,26 +7,17 @@ void processExecuteStatus(ExecuteStatus es)
 	{
 		case ESE_INVALID:
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": invalid command\n");
+			vshMsg("invalid command", MCLR_ERROR);
 		}
 		break;
 		case ESE_MEM:
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": memory error\n");
+			vshMsg("memory error", MCLR_ERROR);
 		}
 		break;
 		case ESE_ABNORMALEXIT:
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": program exited abnormally\n");
+			vshMsg("program exited abnormally", MCLR_ERROR);
 		}
 		break;
 		default:
@@ -53,10 +44,7 @@ void executeStr(const char* str)
 	}
 	else if (strcmp(str, "ret") == 0)
 	{
-		setColour(CLR_DARKGREEN);
-		printf("vsh");
-		setColour(CLR_WOB);
-		printf(": %i\n", exitStat);
+		vshMsg(exitStat, MCLR_NOTICE);
 		exitStat = 0;
 		return;
 	}
@@ -77,10 +65,7 @@ void executeStr(const char* str)
 		char currUsername[1024];
 		if (currUser(currUsername, sizeof(currUsername) / sizeof(*currUsername)))
 		{
-			setColour(CLR_DARKGREEN);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": %s\n", currUsername);
+			vshMsg(currUsername, MCLR_NOTICE);
 		}
 		exitStat = 0;
 		return;
@@ -102,10 +87,7 @@ void executeStr(const char* str)
 		char currPath[1024];
 		if (currDir(currPath, sizeof(currPath) / sizeof(*currPath)))
 		{
-			setColour(CLR_DARKGREEN);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": %s\n", currPath);
+			vshMsg(currPath, MCLR_NOTICE);
 		}
 		exitStat = 0;
 		return;
@@ -119,10 +101,7 @@ void executeStr(const char* str)
 		}
 		else
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to enter directory\n");
+			vshMsg("unable to enter directory", MCLR_ERROR);
 			exitStat = 0;
 			return;
 		}
@@ -131,10 +110,7 @@ void executeStr(const char* str)
 	{
 		if (!listDirectory())
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to list directory\n");
+			vshMsg("unable to list directory", MCLR_ERROR);
 		}
 		exitStat = 0;
 		return;
@@ -170,10 +146,7 @@ void executeStr(const char* str)
 	{
 		if (!deleteFile(start))
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to delete file\n");
+			vshMsg("unable to delete file", MCLR_ERROR);
 		}
 		exitStat = 0;
 		return;
@@ -187,10 +160,7 @@ void executeStr(const char* str)
 		}
 		else
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to create file\n");
+			vshMsg("unable to create file", MCLR_ERROR);
 		}
 		exitStat = 0;
 		return;
@@ -200,10 +170,7 @@ void executeStr(const char* str)
 	{
 		if (!deleteDirectory(start))
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to delete directory\n");
+			vshMsg("unable to delete directory", MCLR_ERROR);
 		}
 		exitStat = 0;
 		return;
@@ -212,10 +179,7 @@ void executeStr(const char* str)
 	{
 		if (!createDirectory(start))
 		{
-			setColour(CLR_DARKRED);
-			printf("vsh");
-			setColour(CLR_WOB);
-			printf(": unable to create directory\n");
+			vshMsg("unable to create directory", MCLR_ERROR);
 		}
 		exitStat = 0;
 		return;
@@ -224,6 +188,19 @@ void executeStr(const char* str)
 	else if (strcmp(str, "cls") == 0 || strcmp(str, "clear") == 0)
 	{
 		clearScreen();
+		exitStat = 0;
+		return;
+	}
+	else if ((start = startsWith(str, "system ")))
+	{
+		if (system(NULL))
+		{
+			system(start);
+		}
+		else
+		{
+			vshMsg("no command processor is available", MCLR_ERROR);
+		}
 		exitStat = 0;
 		return;
 	}

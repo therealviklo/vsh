@@ -12,6 +12,7 @@
 #include "execcl.c"
 #include "ret.c"
 #include "utils.c"
+#include "vshmsg.c"
 
 int main()
 {

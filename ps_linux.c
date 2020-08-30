@@ -8,6 +8,7 @@
 #include <signal.h>
 #include "cl.h"
 #include <stdbool.h>
+#include "vshmsg.h"
 
 ExecuteStatus execute_cl(CL* cl)
 {
@@ -125,19 +126,13 @@ bool deleteFile(const char* rest)
 			return es.error == ESE_SUCCESS;
 		}
 
-		setColour(CLR_DARKRED);
-		printf("vsh");
-		setColour(CLR_WOB);
-		printf(": memory error\n");
+		vshMsg("memory error", MCLR_ERROR);
 		free(buffer);
 		return false;
 	}
 	else
 	{
-		setColour(CLR_DARKRED);
-		printf("vsh");
-		setColour(CLR_WOB);
-		printf(": memory error\n");
+		vshMsg("memory error", MCLR_ERROR);
 		return false;
 	}
 	return true;
