@@ -1,5 +1,92 @@
 ﻿#include "execcl.h"
 
+char* extractSingleParam(const char* str)
+{
+	if (*str == '\'')
+	{
+		str++;
+		const size_t bufLen = strlen(str) + 1;
+		char* buf = malloc(bufLen * sizeof(char));
+		if (buf)
+		{
+			size_t i = 0;
+			for (; str[i] != '\''; i++)
+			{
+				if (str[i] == '\0')
+				{
+					vshMsg("syntax error", MCLR_ERROR);
+					free(buf);
+					return NULL;
+				}
+				buf[i] = str[i];
+			}
+			buf[i] = '\0';
+			i++;
+
+			// Kontrollera att det inte finns saker efter.
+			while (isspace(str[i])) i++;
+			if (str[i] != '\0')
+			{
+				vshMsg("syntax error", MCLR_ERROR);
+				free(buf);
+				return NULL;
+			}
+
+			return buf;
+		}
+	}
+	else if (*str == '\"')
+	{
+		str++;
+		const size_t bufLen = strlen(str) + 1;
+		char* buf = malloc(bufLen * sizeof(char));
+		if (buf)
+		{
+			size_t i = 0;
+			for (; str[i] != '"'; i++)
+			{
+				if (str[i] == '\0')
+				{
+					vshMsg("syntax error", MCLR_ERROR);
+					free(buf);
+					return NULL;
+				}
+				buf[i] = str[i];
+			}
+			buf[i] = '\0';
+			i++;
+
+			// Kontrollera att det inte finns saker efter.
+			while (isspace(str[i])) i++;
+			if (str[i] != '\0')
+			{
+				vshMsg("syntax error", MCLR_ERROR);
+				free(buf);
+				return NULL;
+			}
+
+			return buf;
+		}
+	}
+	else
+	{
+		const size_t bufLen = strlen(str) + 1;
+		char* buf = malloc(bufLen * sizeof(char));
+		if (buf)
+		{
+			memcpy(buf, str, bufLen * sizeof(char));
+			return buf;
+		}
+	}
+	vshMsg("memory error", MCLR_ERROR);
+	return NULL;
+}
+
+void skipWhitespace(const char** strptr)
+{
+	while (isspace(**strptr)) (*strptr)++;
+}
+
 void processExecuteStatus(ExecuteStatus es)
 {
 	exitStat = es.ret;
@@ -112,17 +199,19 @@ void executeStr(const char* str)
 	}
 	else if ((start = startsWith(str, "cd ")))
 	{
-		if (changeDirectory(start))
+		skipWhitespace(&start);
+
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			exitStat = 0;
-			return;
+			if (!changeDirectory(paramBuf))
+			{
+				vshMsg("unable to enter directory", MCLR_ERROR);
+			}
+			free(paramBuf);
 		}
-		else
-		{
-			vshMsg("unable to enter directory", MCLR_ERROR);
-			exitStat = 0;
-			return;
-		}
+		exitStat = 0;
+		return;
 	}
 	else if (strcmp(str, "ls") == 0 || strcmp(str, "dir") == 0)
 	{
@@ -136,25 +225,33 @@ void executeStr(const char* str)
 #ifdef VSH_LINUX
 	else if ((start = startsWith(str, "ls ")) || (start = startsWith(str, "dir ")))
 	{
-		size_t bufferLen = (strlen(str) + sizeof(" --color=auto") / sizeof(char) + 1);
-		char* buffer = malloc(sizeof(char) * bufferLen);
-		if (buffer)
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			int r = snprintf(buffer, bufferLen, "ls --color=auto %s", start);
-			if (r >= 0 && r < bufferLen)
+			size_t bufferLen = (strlen(paramBuf) + sizeof(" --color=auto") / sizeof(char) + 1);
+			char* buffer = malloc(sizeof(char) * bufferLen);
+			if (buffer)
 			{
-				processExecuteStatus(execute(buffer));
+				int r = snprintf(buffer, bufferLen, "ls --color=auto %s", paramBuf);
+				if (r >= 0 && r < bufferLen)
+				{
+					processExecuteStatus(execute(buffer));
+				}
+				else
+				{
+					processExecuteStatus((ExecuteStatus){0, ESE_MEM});
+				}
+
+				free(buffer);
 			}
 			else
 			{
 				processExecuteStatus((ExecuteStatus){0, ESE_MEM});
 			}
 
-			free(buffer);
-		}
-		else
-		{
-			processExecuteStatus((ExecuteStatus){0, ESE_MEM});
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
@@ -162,23 +259,39 @@ void executeStr(const char* str)
 #endif /* VSH_LINUX */
 	else if ((start = startsWith(str, "rm ")) || (start = startsWith(str, "del ")))
 	{
-		if (!deleteFile(start))
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			vshMsg("unable to delete file", MCLR_ERROR);
+			if (!deleteFile(paramBuf))
+			{
+				vshMsg("unable to delete file", MCLR_ERROR);
+			}
+
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
 	}
 	else if ((start = startsWith(str, "mk ")))
 	{
-		FILE* file = fopen(start, "ab");
-		if (file)
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			fclose(file);
-		}
-		else
-		{
-			vshMsg("unable to create file", MCLR_ERROR);
+			FILE* file = fopen(paramBuf, "ab");
+			if (file)
+			{
+				fclose(file);
+			}
+			else
+			{
+				vshMsg("unable to create file", MCLR_ERROR);
+			}
+
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
@@ -186,18 +299,34 @@ void executeStr(const char* str)
 #ifdef VSH_WINDOWS
 	else if ((start = startsWith(str, "rmdir ")))
 	{
-		if (!deleteDirectory(start))
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			vshMsg("unable to delete directory", MCLR_ERROR);
+			if (!deleteDirectory(paramBuf))
+			{
+				vshMsg("unable to delete directory", MCLR_ERROR);
+			}
+
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
 	}
 	else if ((start = startsWith(str, "mkdir ")))
 	{
-		if (!createDirectory(start))
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			vshMsg("unable to create directory", MCLR_ERROR);
+			if (!createDirectory(paramBuf))
+			{
+				vshMsg("unable to create directory", MCLR_ERROR);
+			}
+
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
@@ -211,13 +340,21 @@ void executeStr(const char* str)
 	}
 	else if ((start = startsWith(str, "system ")))
 	{
-		if (system(NULL))
+		skipWhitespace(&start);
+		
+		char* paramBuf = extractSingleParam(start);
+		if (paramBuf)
 		{
-			system(start);
-		}
-		else
-		{
-			vshMsg("no command processor is available", MCLR_ERROR);
+			if (system(NULL))
+			{
+				system(paramBuf);
+			}
+			else
+			{
+				vshMsg("no command processor is available", MCLR_ERROR);
+			}
+
+			free(paramBuf);
 		}
 		exitStat = 0;
 		return;
