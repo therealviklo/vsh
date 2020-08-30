@@ -44,7 +44,25 @@ void executeStr(const char* str)
 	}
 	else if (strcmp(str, "ret") == 0)
 	{
-		vshMsg(exitStat, MCLR_NOTICE);
+		size_t bufLen = 1024;
+		char* buffer = malloc(bufLen * sizeof(char));
+		if (buffer)
+		{
+			int ret = snprintf(buffer, bufLen, "%i", exitStat);
+			if (ret >= 0 && ret < bufLen)
+			{
+				vshMsg(buffer, MCLR_NOTICE);
+			}
+			else
+			{
+				vshMsg("snprintf error", MCLR_ERROR);
+			}
+			free(buffer);
+		}
+		else
+		{
+			vshMsg("memory error", MCLR_ERROR);
+		}
 		exitStat = 0;
 		return;
 	}
