@@ -1,1 +1,1 @@
-﻿@gcc vsh.c -o vsh.exe -DVSH_WINDOWS -ladvapi32 -O2
+@gcc vsh.c -o vsh.exe -DVSH_WINDOWS -ladvapi32 -O2
