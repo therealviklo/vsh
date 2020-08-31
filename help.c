@@ -1,9 +1,35 @@
 ﻿#include "help.h"
 
 const char* const helpTable[] = {
-	"cd DIRECåTORY", "Change direcåtory.",
-	"help", "Show this message.",
-	"system COMMAND", "Send the rest of the command to C's system() function."
+	"cd DIRECTORY", "Changes directory.",
+	"clear", "Clears the screen.\n"
+			 "(Same as \"cls\")",
+	"cls", "Clears the screen.\n"
+		   "(Same as \"clear\")",
+	"del FILE", "Removes a file.\n"
+				"(Same as \"rm\")",
+	"dir", "Windows: Prints a list of the files in the current directory.\n"
+	       "Linux: Runs ls with colours turned on.\n"
+		   "(Same as \"ls\")",
+	"help", "Shows this message.",
+	"ls", "Windows: Prints a list of the files in the current directory.\n"
+	      "Linux: Runs ls with colours turned on.\n"
+		  "(Same as \"dir\")",
+	"mk FILE", "Creates a file.",
+	"mkdir DIRECTORY", "Creates a directory.",
+	"path", "Prints the path of the current directory.",
+	"path off", "Removes the path from the prompt.",
+	"path on", "Adds the path to the prompt",
+	"ret", "Prints the last return value.",
+	"ret off", "Removes the return value from the prompt.",
+	"ret on", "Adds the return value to the prompt.",
+	"rm FILE", "Removes a file.\n"
+			   "(Same as \"del\")",
+	"rmdir DIRECTORY", "Removes a directory.",
+	"system COMMAND", "Sends the rest of the command to C's system() function.",
+	"user", "Prints the name of the current user.",
+	"user off", "Removes the username from the prompt.",
+	"user on", "Adds the username to the prompt."
 };
 
 void printUTF8Character(const char** currPos, size_t* charsWritten)
@@ -22,6 +48,21 @@ void printUTF8Character(const char** currPos, size_t* charsWritten)
 		(*currPos)++;
 	}
 	(*charsWritten)++;
+}
+
+void switchHelpTableLine(size_t* charsWritten, size_t width, size_t longestCommandStrLen)
+{
+	putchar('\n');
+	*charsWritten += width - (*charsWritten % width);
+	
+	if (longestCommandStrLen < width) // <-- Inga oändliga loopar.
+	{
+		while ((*charsWritten % width) < longestCommandStrLen)
+		{
+			putchar(' ');
+			(*charsWritten)++;
+		}
+	}
 }
 
 void printHelpTable(void)
@@ -56,20 +97,62 @@ void printHelpTable(void)
 		currPos = helpTable[2 * i + 1]; // Återanvänder
 		while (*currPos != '\0')
 		{
-			printUTF8Character(&currPos, &charsWritten);
-			if (charsWritten % (screenSize.width - 2) == 0)
+			while (isspace(*currPos))
 			{
-				if (*currPos == ' ') currPos++;
-				else if (*(currPos - 1) != ' ') putchar('-');
-				putchar('\n');
-				for (size_t j = 0; j < longestCommandStrLen; j++)
+				bool switchedLine = false;
+				if (charsWritten % screenSize.width + 2 >= screenSize.width)
 				{
-					putchar(' ');
-					charsWritten++;
+					switchHelpTableLine(&charsWritten, screenSize.width, longestCommandStrLen);
+					switchedLine = true;
 				}
+				if (charsWritten % screenSize.width > longestCommandStrLen)
+				{
+					if (*currPos == '\n')
+					{
+						if (!switchedLine)
+							switchHelpTableLine(&charsWritten, screenSize.width, longestCommandStrLen);
+					}
+					else
+					{
+						putchar(*currPos);
+						charsWritten++;
+					}
+				}
+				currPos++;
 			}
+
+			const char* currWordPos = currPos;
+			size_t wordLen = 0;
+			while (!isspace(*currWordPos) && *currWordPos != '\0')
+			{
+				wordLen++;
+				currWordPos++;
+			}
+
+			if ((charsWritten % screenSize.width) + wordLen >= screenSize.width)
+			{
+				switchHelpTableLine(&charsWritten, screenSize.width, longestCommandStrLen);
+			}
+
+			while (!isspace(*currPos) && *currPos != '\0')
+			{
+				printUTF8Character(&currPos, &charsWritten);
+			}
+			// printUTF8Character(&currPos, &charsWritten);
+			// if (charsWritten % (screenSize.width - 2) == 0)
+			// {
+			// 	if (*currPos == ' ') currPos++;
+			// 	else if (*(currPos - 1) != ' ') putchar('-');
+			// 	putchar('\n');
+			// 	for (size_t j = 0; j < longestCommandStrLen; j++)
+			// 	{
+			// 		putchar(' ');
+			// 		charsWritten++;
+			// 	}
+			// }
 		}
 		putchar('\n');
+		if (i < sizeof(helpTable) / sizeof(*helpTable) / 2 - 1) putchar('\n');
 	}
 
 	fflush(stdout);
