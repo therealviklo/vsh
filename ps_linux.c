@@ -8,8 +8,10 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <stdbool.h>
+#include <termios.h>
 #include "cl.h"
 #include "vshmsg.h"
+#include "ss.h"
 
 ExecuteStatus execute_cl(CL* cl)
 {
@@ -165,4 +167,78 @@ ScreenSize getScreenSize(void)
 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1)
 		return (ScreenSize){w.ws_col, w.ws_row};
 	return (ScreenSize){0, 0};
+}
+
+size_t getCursorPos_stringToSize(const char* str)
+{
+	size_t sum = 0;
+	while (*str != '\0')
+	{
+		sum *= 10;
+		sum += *str - '0';
+		str++;
+	}
+	return sum;
+}
+
+void getCursorPos_noEcho(bool enable)
+{
+	static struct termios old;
+	static struct termios new;
+
+	if (enable)
+	{
+		tcgetattr(0, &old);
+		new = old;
+		new.c_lflag &= ~ICANON;
+		new.c_lflag &= ~ECHO;
+		tcsetattr(0, TCSANOW, &new);
+	}
+	else
+	{
+		tcsetattr(0, TCSANOW, &old);
+	}
+}
+
+CursorPos getCursorPos(void)
+{
+	getCursorPos_noEcho(true);
+
+	printf("\x1b[6n");
+	fflush(stdout);
+
+	while (getchar() != '\x1b');
+	if (getchar() != '[')
+	{
+		getCursorPos_noEcho(false);
+		return (CursorPos){0, 0};
+	}
+
+	SS* yss = SScreate();
+	if (yss)
+	{
+		int c;
+		while ((c = getchar()) != ';' && c != EOF) SSadd(yss, c);
+		if (c != EOF)
+		{
+			SS* xss = SScreate();
+			if (xss)
+			{
+				while ((c = getchar()) != 'R' && c != EOF) SSadd(xss, c);
+				if (c != EOF)
+				{
+					size_t x = getCursorPos_stringToSize(xss->str);
+					size_t y = getCursorPos_stringToSize(yss->str);
+					SSfree(yss);
+					SSfree(xss);
+					getCursorPos_noEcho(false);
+					return (CursorPos){x, y};
+				}
+				SSfree(xss);
+			}
+		}
+		SSfree(yss);
+	}
+	getCursorPos_noEcho(false);
+	return (CursorPos){0, 0};
 }

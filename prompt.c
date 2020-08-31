@@ -2,6 +2,8 @@
 
 void printPrompt(void)
 {
+	if (getCursorPos().x != 1) putchar('\n');
+
 	if (retOn)
 	{
 		setColour(CLR_LIGHTCYAN);

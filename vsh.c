@@ -17,6 +17,7 @@
 
 int main()
 {
+	setvbuf(stdin, NULL, _IONBF, 0);
 	psInit();
 	while (1)
 	{

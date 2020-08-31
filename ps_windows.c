@@ -190,3 +190,13 @@ ScreenSize getScreenSize(void)
 	if (width == 0 || height == 0) return (ScreenSize){0, 0};
 	return (ScreenSize){width, height};
 }
+
+CursorPos getCursorPos(void)
+{
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info))
+	{
+		return (CursorPos){info.dwCursorPosition.X, info.dwCursorPosition.Y};
+	}
+	return (CursorPos){0, 0};
+}
