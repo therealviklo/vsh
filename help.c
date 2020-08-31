@@ -1,10 +1,28 @@
 ﻿#include "help.h"
 
 const char* const helpTable[] = {
-	"cd DIRECTORY", "Change directory.",
+	"cd DIRECåTORY", "Change direcåtory.",
 	"help", "Show this message.",
 	"system COMMAND", "Send the rest of the command to C's system() function."
 };
+
+void printUTF8Character(const char** currPos, size_t* charsWritten)
+{
+	if (0b10000000 & **currPos)
+	{
+		do
+		{
+			putchar(**currPos);
+			(*currPos)++;
+		} while ((0b10000000 & **currPos) && !(0b01000000 & **currPos));
+	}
+	else
+	{
+		putchar(**currPos);
+		(*currPos)++;
+	}
+	(*charsWritten)++;
+}
 
 void printHelpTable(void)
 {
@@ -27,9 +45,7 @@ void printHelpTable(void)
 		size_t charsWritten = 0;
 		while (*currPos != '\0')
 		{
-			putchar(*currPos);
-			charsWritten++;
-			currPos++;
+			printUTF8Character(&currPos, &charsWritten);
 		}
 		while (charsWritten < longestCommandStrLen)
 		{
@@ -40,9 +56,7 @@ void printHelpTable(void)
 		currPos = helpTable[2 * i + 1]; // Återanvänder
 		while (*currPos != '\0')
 		{
-			putchar(*currPos);
-			charsWritten++;
-			currPos++;
+			printUTF8Character(&currPos, &charsWritten);
 			if (charsWritten % (screenSize.width - 2) == 0)
 			{
 				if (*currPos == ' ') currPos++;
