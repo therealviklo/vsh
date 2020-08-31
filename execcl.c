@@ -359,6 +359,12 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+	else if (strcmp(str, "help") == 0)
+	{
+		printHelpTable();
+		exitStat = 0;
+		return;
+	}
 
 	processExecuteStatus(execute(str));
 }

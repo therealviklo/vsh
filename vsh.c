@@ -13,6 +13,7 @@
 #include "ret.c"
 #include "utils.c"
 #include "vshmsg.c"
+#include "help.c"
 
 int main()
 {

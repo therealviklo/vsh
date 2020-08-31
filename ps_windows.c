@@ -182,3 +182,11 @@ void clearScreen(void)
 
 	SetConsoleCursorPosition(handle, (COORD){0, 0});
 }
+
+ScreenSize getScreenSize(void)
+{
+	DWORD width = GetSystemMetrics(SM_CXSCREEN);
+	DWORD height = GetSystemMetrics(SM_CYSCREEN);
+	if (width == 0 || height == 0) return (ScreenSize){0, 0};
+	return (ScreenSize){width, height};
+}

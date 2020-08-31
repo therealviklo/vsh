@@ -34,6 +34,11 @@ typedef struct {
 	} error;
 } ExecuteStatus;
 
+typedef struct {
+	size_t width;
+	size_t height;
+} ScreenSize;
+
 ExecuteStatus execute(const char* str);
 // True om den lyckades
 bool currDir(char* buffer, size_t size);
@@ -56,3 +61,6 @@ void psUninit(void);
 void setColour(Colour colour);
 
 void clearScreen(void);
+
+// Returnerar {0, 0} om något går fel.
+ScreenSize getScreenSize(void);

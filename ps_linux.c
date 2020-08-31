@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <signal.h>
-#include "cl.h"
+#include <sys/ioctl.h>
 #include <stdbool.h>
+#include "cl.h"
 #include "vshmsg.h"
 
 ExecuteStatus execute_cl(CL* cl)
@@ -156,4 +157,12 @@ void setColour(Colour colour)
 void clearScreen(void)
 {
 	execute("clear");
+}
+
+ScreenSize getScreenSize(void)
+{
+	struct winsize w;
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1)
+		return (ScreenSize){w.ws_col, w.ws_row};
+	return (ScreenSize){0, 0};
 }

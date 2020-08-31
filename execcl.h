@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "ret.h"
 #include "vshmsg.h"
+#include "help.h"
 
 /* Returnerar en malloc:ad sträng eller en nullpekare om något gick fel.
    Funktionen skriver även ut felmeddelande. */
