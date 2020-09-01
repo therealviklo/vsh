@@ -48,7 +48,7 @@ void fromFile(const char* filename)
 	FILE* file = fopen(filename, "r");
 	if (file)
 	{
-		if (getc(file) != '0xef' || getc(file) != '0xbb' || getc(file) != '0xbf') rewind(file); // BOM-check
+		if (getc(file) != '\xef' || getc(file) != '\xbb' || getc(file) != '\xbf') rewind(file); // BOM-check
 
 		long pos = ftell(file);
 		if (pos != -1)
