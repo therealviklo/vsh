@@ -15,10 +15,8 @@
 #include "vshmsg.c"
 #include "help.c"
 
-int main()
+void interactive(void)
 {
-	setvbuf(stdin, NULL, _IONBF, 0);
-	psInit();
 	while (1)
 	{
 		SS* ss = SScreate();
@@ -42,6 +40,52 @@ int main()
 			break;
 		}
 	}
+}
+
+void fromFile(const char* filename)
+{
+	int c = '\0';
+	FILE* file = fopen(filename, "r");
+	if (file)
+	{
+		if (getc(file) != '0xef' || getc(file) != '0xbb' || getc(file) != '0xbf') rewind(file); // BOM-check
+
+		long pos = ftell(file);
+		if (pos != -1)
+		{
+			if (getc(file) != '#' || getc(file) != '!')
+			{
+				fseek(file, pos, SEEK_SET);
+			}
+			else
+			{
+				while ((c = getc(file)) != '\n' && c != EOF);
+			}
+		}
+
+		while (1)
+		{
+			
+		}
+
+		fclose(file);
+	}
+}
+
+int main(int argc, char** argv)
+{
+	setvbuf(stdin, NULL, _IONBF, 0);
+	psInit();
+	
+	if (argc == 2)
+	{
+		fromFile(argv[1]);
+	}
+	else
+	{
+		interactive();
+	}
+
 	psUninit();
 	return 0;
 }
