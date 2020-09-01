@@ -32,7 +32,7 @@ void interactive(void)
 				SSfree(ss);
 				break;
 			}
-			executeStr(ss->str);
+			if (strcmp(ss->str, "") != 0) executeStr(ss->str);
 			SSfree(ss);
 		}
 		else
@@ -65,10 +65,35 @@ void fromFile(const char* filename)
 
 		while (1)
 		{
-			
+			SS* ss = SScreate();
+			if (ss)
+			{
+				int c;
+				while ((c = getc(file)) != '\n' && c != EOF) SSadd(ss, c);
+
+				if (strcmp(ss->str, "exit") == 0)
+				{
+					c = EOF;
+				}
+				else if (strcmp(ss->str, "") != 0)
+				{
+					executeStr(ss->str);
+				}
+				
+				SSfree(ss);
+				if (c == EOF) break;
+			}
+			else
+			{
+				break;
+			}
 		}
 
 		fclose(file);
+	}
+	else
+	{
+		vshMsg("file not found", MCLR_ERROR);
 	}
 }
 

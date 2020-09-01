@@ -11,6 +11,7 @@ const char* const helpTable[] = {
 	"dir", "Windows: Prints a list of the files in the current directory.\n"
 	       "Linux: Runs ls with colours turned on.\n"
 		   "(Same as \"ls\")",
+	"exit", "Exits.",
 	"help", "Shows this message.",
 	"ls", "Windows: Prints a list of the files in the current directory.\n"
 	      "Linux: Runs ls with colours turned on.\n"
