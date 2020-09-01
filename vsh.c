@@ -106,6 +106,17 @@ int main(int argc, char** argv)
 	{
 		fromFile(argv[1]);
 	}
+	else if (argc > 2)
+	{
+		if (strcmp(argv[1], "-c") == 0 && argc == 3)
+		{
+			executeStr(argv[2]);
+		}
+		else
+		{
+			vshMsg("invalid syntax", MCLR_ERROR);
+		}
+	}
 	else
 	{
 		interactive();
