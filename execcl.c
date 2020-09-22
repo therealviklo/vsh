@@ -227,32 +227,26 @@ void executeStr(const char* str)
 	{
 		skipWhitespace(&start);
 		
-		char* paramBuf = extractSingleParam(start);
-		if (paramBuf)
+		size_t bufferLen = (strlen(start) + sizeof("ls --color=auto") / sizeof(char) + 1);
+		char* buffer = malloc(sizeof(char) * bufferLen);
+		if (buffer)
 		{
-			size_t bufferLen = (strlen(paramBuf) + sizeof(" --color=auto") / sizeof(char) + 1);
-			char* buffer = malloc(sizeof(char) * bufferLen);
-			if (buffer)
+			int r = snprintf(buffer, bufferLen, "ls --color=auto %s", start);
+			if (r >= 0 && r < bufferLen)
 			{
-				int r = snprintf(buffer, bufferLen, "ls --color=auto %s", paramBuf);
-				if (r >= 0 && r < bufferLen)
-				{
-					processExecuteStatus(execute(buffer));
-				}
-				else
-				{
-					processExecuteStatus((ExecuteStatus){0, ESE_MEM});
-				}
-
-				free(buffer);
+				processExecuteStatus(execute(buffer));
 			}
 			else
 			{
 				processExecuteStatus((ExecuteStatus){0, ESE_MEM});
 			}
-
-			free(paramBuf);
+			free(buffer);
 		}
+		else
+		{
+			processExecuteStatus((ExecuteStatus){0, ESE_MEM});
+		}
+		
 		exitStat = 0;
 		return;
 	}
