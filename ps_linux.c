@@ -110,6 +110,13 @@ bool changeDirectory(const char* dir)
 	return chdir(dir) != -1;
 }
 
+bool changeDirectoryHome(void)
+{
+	const char* const home = getenv("HOME");
+	if (home) return changeDirectory(home);
+	return false;
+}
+
 bool listDirectory(void)
 {
 	return execute("ls --color=auto").error == ESE_SUCCESS;

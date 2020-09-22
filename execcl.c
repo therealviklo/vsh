@@ -197,6 +197,15 @@ void executeStr(const char* str)
 		exitStat = 0;
 		return;
 	}
+	else if (strcmp(str, "cd") == 0)
+	{
+		if (!changeDirectoryHome())
+		{
+			vshMsg("unable to go to home directory", MCLR_ERROR);
+		}
+		exitStat = 0;
+		return;
+	}
 	else if ((start = startsWith(str, "cd ")))
 	{
 		skipWhitespace(&start);

@@ -92,6 +92,29 @@ bool changeDirectory(const char* dir)
 	return SetCurrentDirectoryA(dir);
 }
 
+bool changeDirectoryHome(void)
+{
+	bool success = false;
+
+	DWORD s = GetEnvironmentVariableA("userprofile", NULL, 0);
+	if (s)
+	{
+		char* buf = malloc(sizeof(char) * s);
+		if (buf)
+		{
+			DWORD r = GetEnvironmentVariableA("userprofile", buf, s);
+			if (r != 0 && r < s)
+			{
+				changeDirectory(buf);
+				success = true;
+			}
+
+			free(buf);
+		}
+	}
+	return success;
+}
+
 bool listDirectory(void)
 {
 	WIN32_FIND_DATAA findData;

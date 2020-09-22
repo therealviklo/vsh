@@ -1,6 +1,7 @@
 ﻿#include "help.h"
 
 const char* const helpTable[] = {
+	"cd", "Changes directory to the home directory.",
 	"cd DIRECTORY", "Changes directory.",
 	"clear", "Clears the screen.\n"
 			 "(Same as \"cls\")",

@@ -51,6 +51,7 @@ bool currDir(char* buffer, size_t size);
 bool currUser(char* buffer, size_t size);
 
 bool changeDirectory(const char* dir);
+bool changeDirectoryHome(void);
 bool listDirectory(void);
 
 bool deleteFile(const char* rest);
