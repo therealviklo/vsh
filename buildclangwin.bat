@@ -1,1 +1,1 @@
-@clang vsh.c -o vsh.exe -DVSH_WINDOWS -ladvapi32 -O2
+@clang vsh.c -o vsh.exe -DVSH_WINDOWS -ladvapi32 -luser32 -O2 -D_CRT_SECURE_NO_WARNINGS
