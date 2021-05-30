@@ -405,9 +405,6 @@ char* getLine(void)
 
 		CursorPos const secPos = getCursorPos();
 		if (!secPos.x) goto cleanup;
-		ScreenSize const ssiz = getScreenSize();
-		if (!ssiz.width) goto cleanup;
-		firstPos.x %= ssiz.width;
 
 		lss->arr[lss->pos++].w = secPos.x < firstPos.x ? secPos.x : secPos.x - firstPos.x;
 	}

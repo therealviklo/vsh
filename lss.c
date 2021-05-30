@@ -53,22 +53,6 @@ static void calcNewPos(LSS* lss, CursorPos* cur)
     }
 }
 
-void LSSprint(LSS* lss)
-{
-    printf("\x1b[u\x1b[J");
-    fflush(stdout);
-    CursorPos beg = getCursorPos();
-    if (!beg.x) return;
-    char* const str = LSSgetstr(lss);
-    printf("%s", str);
-    fflush(stdout);
-    free(str);
-    calcNewPos(lss, &beg);
-    printf("\x1b[%zu;%zuH", beg.y, beg.x);
-    fflush(stdout);
-    sleep(10);
-}
-
 void LSSreprint(LSS* lss)
 {
     const CursorPos beg = getCursorPos();
@@ -110,10 +94,18 @@ void LSSleft(LSS* lss)
     if (lss->pos)
     {
         lss->pos--;
-        // for (int i = 0; i < lss->arr[lss->pos].w; i++)
-        // {
-            printf("\x1b[1D");
-        // }
+        const CursorPos cur = getCursorPos();
+        if (!cur.x) return;
+        if (cur.x == 1)
+        {
+            const ScreenSize ssiz = getScreenSize();
+            if (!ssiz.width) return;
+            printf("\x1b[1A\x1b[%zuC", ssiz.width - lss->arr[lss->pos].w);
+        }
+        else
+        {
+            printf("\x1b[%iD", lss->arr[lss->pos].w);
+        }
     }
 }
 
@@ -121,10 +113,18 @@ void LSSright(LSS* lss)
 {
     if (lss->pos < lss->size)
     {
-        // for (int i = 0; i < lss->arr[lss->pos].w; i++)
-        // {
-            printf("\x1b[1C");
-        // }
+        const CursorPos cur = getCursorPos();
+        if (!cur.x) return;
+        const ScreenSize ssiz = getScreenSize();
+        if (!ssiz.width) return;
+        if (cur.x + lss->arr[lss->pos].w > ssiz.width)
+        {
+            putchar('\n');
+        }
+        else
+        {
+            printf("\x1b[%iC", lss->arr[lss->pos].w);
+        }
         lss->pos++;
     }
 }
