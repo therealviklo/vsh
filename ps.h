@@ -71,3 +71,5 @@ void clearScreen(void);
 // Returnerar {0, 0} om något går fel.
 ScreenSize getScreenSize(void);
 CursorPos getCursorPos(void);
+
+char* getLine(void);

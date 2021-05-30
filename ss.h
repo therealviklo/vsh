@@ -10,3 +10,5 @@ typedef struct {
 SS* SScreate(void);
 void SSfree(SS* ss);
 void SSadd(SS* ss, char c);
+void SSpop(SS* ss);
+char* SSrelease(SS* ss);

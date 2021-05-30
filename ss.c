@@ -33,3 +33,16 @@ void SSadd(SS* ss, char c)
 		ss->str[ss->size - 1] = '\0';
 	}
 }
+
+void SSpop(SS* ss)
+{
+	ss->size--;
+	ss->str[ss->size - 1] = '\0';
+}
+
+char* SSrelease(SS* ss)
+{
+	char* const str = ss->str;
+	free(ss);
+	return str;
+}

@@ -12,6 +12,9 @@
 #include "cl.h"
 #include "vshmsg.h"
 #include "ss.h"
+#include "lss.h"
+
+#include "lss.c"
 
 ExecuteStatus execute_cl(CL* cl)
 {
@@ -188,36 +191,68 @@ size_t getCursorPos_stringToSize(const char* str)
 	return sum;
 }
 
-void getCursorPos_noEcho(bool enable)
+static void noEcho(bool enable)
 {
 	static struct termios old;
 	static struct termios new;
+	static int count = 0;
 
 	if (enable)
 	{
-		tcgetattr(0, &old);
-		new = old;
-		new.c_lflag &= ~ICANON;
-		new.c_lflag &= ~ECHO;
-		tcsetattr(0, TCSANOW, &new);
+		if (count++ == 0)
+		{
+			tcgetattr(0, &old);
+			new = old;
+			new.c_lflag &= ~ICANON;
+			new.c_lflag &= ~ECHO;
+			tcsetattr(0, TCSANOW, &new);
+		}
 	}
 	else
 	{
-		tcsetattr(0, TCSANOW, &old);
+		if (--count == 0)
+		{
+			tcsetattr(0, TCSANOW, &old);
+		}
 	}
+}
+
+static void ungetAndFree(SS* ss)
+{
+	for (size_t i = 1; i <= ss->size; i++)
+	{
+		ungetc(ss->str[ss->size - i], stdin);
+	}
+	SSfree(ss);
+}
+
+static int nngetchar(void)
+{
+	int c = '\0';
+	while ((c = getchar()) == '\0');
+	return c;
 }
 
 CursorPos getCursorPos(void)
 {
-	getCursorPos_noEcho(true);
+	noEcho(true);
 
 	printf("\x1b[6n");
 	fflush(stdout);
 
-	while (getchar() != '\x1b');
-	if (getchar() != '[')
+	SS* ugss = SScreate();
+	if (!ugss)
 	{
-		getCursorPos_noEcho(false);
+		noEcho(false);
+		return (CursorPos){0, 0};
+	}
+
+	int ugc = '\0';
+	while ((ugc = nngetchar()) != '\x1b') SSadd(ugss, ugc);
+	if (nngetchar() != '[')
+	{
+		ungetAndFree(ugss);
+		noEcho(false);
 		return (CursorPos){0, 0};
 	}
 
@@ -225,20 +260,21 @@ CursorPos getCursorPos(void)
 	if (yss)
 	{
 		int c;
-		while ((c = getchar()) != ';' && c != EOF) SSadd(yss, c);
+		while ((c = nngetchar()) != ';' && c != EOF) SSadd(yss, c);
 		if (c != EOF)
 		{
 			SS* xss = SScreate();
 			if (xss)
 			{
-				while ((c = getchar()) != 'R' && c != EOF) SSadd(xss, c);
+				while ((c = nngetchar()) != 'R' && c != EOF) SSadd(xss, c);
 				if (c != EOF)
 				{
 					size_t x = getCursorPos_stringToSize(xss->str);
 					size_t y = getCursorPos_stringToSize(yss->str);
 					SSfree(yss);
 					SSfree(xss);
-					getCursorPos_noEcho(false);
+					ungetAndFree(ugss);
+					noEcho(false);
 					return (CursorPos){x, y};
 				}
 				SSfree(xss);
@@ -246,6 +282,141 @@ CursorPos getCursorPos(void)
 		}
 		SSfree(yss);
 	}
-	getCursorPos_noEcho(false);
+	ungetAndFree(ugss);
+	noEcho(false);
 	return (CursorPos){0, 0};
+}
+
+typedef enum {
+	SCA_NOTHING,
+	SCA_BREAK,
+	SCA_CONTINUE
+} SCact;
+
+static SCact procSC(int c, LSS* lss)
+{
+	switch (c)
+	{
+		case '\n':
+		{
+			putchar(c);
+		}
+		return SCA_BREAK;
+		case '\x1b':
+		{
+			const int sc = nngetchar();
+			if (sc == '[')
+			{
+				const int tc = nngetchar();
+				switch (tc)
+				{
+					case 'C':
+					{
+						LSSright(lss);
+					}
+					break;
+					case 'D':
+					{
+						LSSleft(lss);
+					}
+					break;
+					case '3':
+					{
+						const int c4 = nngetchar();
+						if (c4 == '~')
+						{
+							LSSpop(lss);
+							LSSreprint(lss);
+						}
+					}
+					break;
+				}
+			}
+		}
+		return SCA_CONTINUE;
+		case '\b':
+		case '\x7f':
+		{
+			if (lss->pos)
+			{
+				LSSleft(lss);
+				LSSpop(lss);
+				LSSreprint(lss);
+			}
+		}
+		return SCA_CONTINUE;
+	}
+	return SCA_NOTHING;
+}
+
+static int UTF8contBytes(unsigned char c)
+{
+	if (c > 0b11110000) return 3;
+	if (c > 0b11100000) return 2;
+	if (c > 0b11000000) return 1;
+	return 0;
+}
+
+char* getLine(void)
+{
+	char* ret = NULL;
+	noEcho(true);
+
+	LSS* lss = LSScreate();
+	if (!lss) goto cleanup;
+
+	printf("\x1b[s");
+
+	while (true)
+	{
+		char c[4] = {};
+		
+		const int c1 = nngetchar();
+		const SCact scact = procSC(c1, lss);
+		switch (scact)
+		{
+			case SCA_CONTINUE:
+				continue;
+			case SCA_BREAK:
+				goto breakWhile;
+			case SCA_NOTHING:
+				break;
+		}
+		c[0] = c1;
+		const int nContBytes = UTF8contBytes(c1);
+		for (int pos = 1; pos <= nContBytes; pos++)
+		{
+			const int nc = nngetchar();
+			c[pos] = nc;
+		}
+
+		LSSadd(lss, c, 0);
+		lss->pos--;
+		LSSreprint(lss);
+		
+		CursorPos firstPos = getCursorPos();
+		if (!firstPos.x) goto cleanup;
+
+		for (int i = 0; i < 4; i++)
+		{
+			if (!c[i]) break;
+			putchar(c[i]);
+		}
+
+		CursorPos const secPos = getCursorPos();
+		if (!secPos.x) goto cleanup;
+		ScreenSize const ssiz = getScreenSize();
+		if (!ssiz.width) goto cleanup;
+		firstPos.x %= ssiz.width;
+
+		lss->arr[lss->pos++].w = secPos.x < firstPos.x ? secPos.x : secPos.x - firstPos.x;
+	}
+breakWhile:
+
+	ret = LSSrelease(lss);
+	lss = NULL;
+cleanup:
+	if (lss) LSSfree(lss);
+	noEcho(false);
+	return ret;
 }

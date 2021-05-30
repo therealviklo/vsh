@@ -19,26 +19,17 @@ void interactive(void)
 {
 	while (1)
 	{
-		SS* ss = SScreate();
-		if (ss)
+		printPrompt();
+		char* const str = getLine();
+		setColour(CLR_WOB);
+		fflush(stdout);
+		if (strcmp(str, "exit") == 0)
 		{
-			printPrompt();
-			int c = '\0';
-			while ((c = getchar()) != '\n' && c != EOF) SSadd(ss, c);
-			setColour(CLR_WOB);
-			fflush(stdout);
-			if (strcmp(ss->str, "exit") == 0)
-			{
-				SSfree(ss);
-				break;
-			}
-			if (strcmp(ss->str, "") != 0) executeStr(ss->str);
-			SSfree(ss);
-		}
-		else
-		{
+			free(str);
 			break;
 		}
+		if (strcmp(str, "") != 0) executeStr(str);
+		free(str);
 	}
 }
 

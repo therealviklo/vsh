@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "ss.h"
 
 bool otherProcessShallRun = false;
 
@@ -222,4 +223,13 @@ CursorPos getCursorPos(void)
 		return (CursorPos){info.dwCursorPosition.X + 1, info.dwCursorPosition.Y + 1};
 	}
 	return (CursorPos){0, 0};
+}
+
+char* getLine(void)
+{
+	SS* ss = SScreate();
+	if (!ss) return NULL;
+	int c = '\0';
+	while ((c = getchar()) != '\n' && c != EOF) SSadd(ss, c);
+	return SSrelease(ss);
 }
