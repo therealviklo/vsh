@@ -5,14 +5,15 @@
 #include "ps.h"
 
 typedef struct LSSnode {
-    char c[4];
-    int w;
+	char c[4];
+	int w;
 } LSSnode;
 
 typedef struct {
-    LSSnode* arr;
-    size_t size;
-    size_t pos;
+	LSSnode* arr;
+	size_t size;
+	size_t pos;
+	CursorPos beg;
 } LSS;
 
 LSS* LSScreate(void);
@@ -20,6 +21,7 @@ void LSSfree(LSS* lss);
 void LSSadd(LSS* lss, char c[4], int w);
 void LSSpop(LSS* lss);
 void LSSreprint(LSS* lss);
+void LSSreprint2(LSS* lss);
 char* LSSgetstr(LSS* lss);
 char* LSSrelease(LSS* lss);
 void LSSleft(LSS* lss);

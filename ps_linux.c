@@ -351,9 +351,9 @@ static SCact procSC(int c, LSS* lss)
 
 static int UTF8contBytes(unsigned char c)
 {
-	if (c > 0b11110000) return 3;
-	if (c > 0b11100000) return 2;
-	if (c > 0b11000000) return 1;
+	if (c >= 0b11110000) return 3;
+	if (c >= 0b11100000) return 2;
+	if (c >= 0b11000000) return 1;
 	return 0;
 }
 
@@ -364,8 +364,6 @@ char* getLine(void)
 
 	LSS* lss = LSScreate();
 	if (!lss) goto cleanup;
-
-	printf("\x1b[s");
 
 	while (true)
 	{
@@ -392,7 +390,6 @@ char* getLine(void)
 
 		LSSadd(lss, c, 0);
 		lss->pos--;
-		LSSreprint(lss);
 		
 		CursorPos firstPos = getCursorPos();
 		if (!firstPos.x) goto cleanup;
@@ -403,10 +400,45 @@ char* getLine(void)
 			putchar(c[i]);
 		}
 
-		CursorPos const secPos = getCursorPos();
+		CursorPos secPos = getCursorPos();
 		if (!secPos.x) goto cleanup;
+        
+		const ScreenSize ssiz = getScreenSize();
+        if (!ssiz.width) goto cleanup;
+		if (secPos.x == ssiz.width)
+		{
+			CursorPos retPos = getCursorPos();
+			putchar('\n');
+			if (secPos.y == ssiz.height)
+			{
+				lss->beg.y--;
+				retPos.y--;
+				firstPos.y--;
+				secPos.y--;
+			}
+		
+			firstPos = getCursorPos();
+			if (!firstPos.x) goto cleanup;
 
-		lss->arr[lss->pos++].w = secPos.x < firstPos.x ? secPos.x : secPos.x - firstPos.x;
+			for (int i = 0; i < 4; i++)
+			{
+				if (!c[i]) break;
+				putchar(c[i]);
+			}
+
+			secPos = getCursorPos();
+			if (!secPos.x) goto cleanup;
+
+			printf("\r\x1b[0J");
+			printf("\x1b[%zu;%zuH", retPos.y, retPos.x);
+		}
+
+		lss->arr[lss->pos++].w =
+			secPos.x < firstPos.x ?
+				secPos.x + 1 :
+				secPos.x - firstPos.x;
+
+		LSSreprint2(lss);
 	}
 breakWhile:
 
