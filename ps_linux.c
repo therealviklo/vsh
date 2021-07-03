@@ -369,6 +369,9 @@ char* getLine(void)
 	{
 		char c[4] = {};
 		
+		CursorPos posBeforeWaitingForChar = getCursorPos();
+		if (!posBeforeWaitingForChar.x) goto cleanup;
+		
 		const int c1 = nngetchar();
 		const SCact scact = procSC(c1, lss);
 		switch (scact)
@@ -386,6 +389,14 @@ char* getLine(void)
 		{
 			const int nc = nngetchar();
 			c[pos] = nc;
+		}
+		
+		CursorPos posAfterWaitingForChar = getCursorPos();
+		if (!posAfterWaitingForChar.x) goto cleanup;
+
+		if (posBeforeWaitingForChar.y != posAfterWaitingForChar.y)
+		{
+			lss->beg.y += posAfterWaitingForChar.y - posBeforeWaitingForChar.y;
 		}
 
 		LSSadd(lss, c, 0);
