@@ -94,14 +94,15 @@ void LSSreprint2(LSS* lss)
 
 char* LSSgetstr(LSS* lss)
 {
-	char* const ret = calloc(lss->size + 1, sizeof(char));
+	char* const ret = calloc(lss->size * 4 + 1, sizeof(char));
 	if (!ret) return NULL;
+	size_t pos = 0;
 	for (size_t i = 0; i < lss->size; i++)
 	{
 		for (size_t j = 0; j < 4; j++)
 		{
 			if (!lss->arr[i].c[j]) break;
-			ret[i] = lss->arr[i].c[j];
+			ret[pos++] = lss->arr[i].c[j];
 		}
 	}
 	return ret;
