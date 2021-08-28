@@ -399,11 +399,7 @@ char* getLine(void)
 			lss->beg.y += posAfterWaitingForChar.y - posBeforeWaitingForChar.y;
 		}
 
-		LSSadd(lss, c, 0);
-		lss->pos--;
-		
-		CursorPos firstPos = getCursorPos();
-		if (!firstPos.x) goto cleanup;
+		LSSadd(lss, c);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -411,45 +407,7 @@ char* getLine(void)
 			putchar(c[i]);
 		}
 
-		CursorPos secPos = getCursorPos();
-		if (!secPos.x) goto cleanup;
-        
-		const ScreenSize ssiz = getScreenSize();
-        if (!ssiz.width) goto cleanup;
-		if (secPos.x == ssiz.width)
-		{
-			CursorPos retPos = getCursorPos();
-			putchar('\n');
-			if (secPos.y == ssiz.height)
-			{
-				lss->beg.y--;
-				retPos.y--;
-				firstPos.y--;
-				secPos.y--;
-			}
-		
-			firstPos = getCursorPos();
-			if (!firstPos.x) goto cleanup;
-
-			for (int i = 0; i < 4; i++)
-			{
-				if (!c[i]) break;
-				putchar(c[i]);
-			}
-
-			secPos = getCursorPos();
-			if (!secPos.x) goto cleanup;
-
-			printf("\r\x1b[0J");
-			printf("\x1b[%zu;%zuH", retPos.y, retPos.x);
-		}
-
-		lss->arr[lss->pos++].w =
-			secPos.x < firstPos.x ?
-				secPos.x + 1 :
-				secPos.x - firstPos.x;
-
-		LSSreprint2(lss);
+		LSSreprint(lss);
 	}
 breakWhile:
 

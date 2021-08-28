@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 #include "ps.h"
+#include "charsizes.h"
+#include "conv.h"
 
 typedef struct LSSnode {
 	char c[4];
-	int w;
 } LSSnode;
 
 typedef struct {
@@ -18,10 +19,9 @@ typedef struct {
 
 LSS* LSScreate(void);
 void LSSfree(LSS* lss);
-void LSSadd(LSS* lss, char c[4], int w);
+void LSSadd(LSS* lss, char c[4]);
 void LSSpop(LSS* lss);
 void LSSreprint(LSS* lss);
-void LSSreprint2(LSS* lss);
 char* LSSgetstr(LSS* lss);
 char* LSSrelease(LSS* lss);
 void LSSleft(LSS* lss);

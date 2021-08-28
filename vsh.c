@@ -14,6 +14,8 @@
 #include "utils.c"
 #include "vshmsg.c"
 #include "help.c"
+#include "charsizes.c"
+#include "conv.c"
 
 void interactive(void)
 {

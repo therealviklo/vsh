@@ -16,7 +16,7 @@ void LSSfree(LSS* lss)
 	free(lss);
 }
 
-void LSSadd(LSS* lss, char c[4], int w)
+void LSSadd(LSS* lss, char c[4])
 {
 	LSSnode* const newBlock = realloc(lss->arr, (lss->size + 1) * sizeof(LSSnode));
 	if (newBlock)
@@ -25,7 +25,6 @@ void LSSadd(LSS* lss, char c[4], int w)
 		memmove(&lss->arr[lss->pos + 1], &lss->arr[lss->pos], sizeof(LSSnode) * (lss->size - lss->pos));
 		lss->size++;
 		memcpy(lss->arr[lss->pos].c, c, sizeof(char[4]));
-		lss->arr[lss->pos].w = w;
 		lss->pos++;
 	}
 }
@@ -46,27 +45,34 @@ static void gotoNewPos(LSS* lss)
 	if (!ssiz.width) return;
 	for (size_t i = 0; i < lss->pos; i++)
 	{
-		if (cur.x + lss->arr[i].w > ssiz.width)
+		const unsigned char w = getcharsize(utf8charcode(lss->arr[i].c));
+		if (cur.x + w > ssiz.width)
 		{
 			cur.x = 1;
 			cur.y++;
-			if (cur.x + lss->arr[i].w > ssiz.width + 1)
+			if (cur.x + w > ssiz.width + 1)
 			{
-				cur.x += lss->arr[i].w;
+				cur.x += w;
 			}
 		}
 		else
 		{
-			cur.x += lss->arr[i].w;
+			cur.x += w;
 		}
+	}
+	if (cur.y > ssiz.height)
+	{
+		if (cur.x == 1)
+		{
+			printf("\e[%zuS", cur.y - ssiz.height);
+		}
+		lss->beg.y -= cur.y - ssiz.height;
 	}
 	printf("\x1b[%zu;%zuH", cur.y, cur.x);
 }
 
 void LSSreprint(LSS* lss)
 {
-	// const CursorPos beg = getCursorPos();
-	printf("\x1b[0J\x1b[s");
 	for (size_t i = lss->pos; i < lss->size; i++)
 	{
 		for (size_t j = 0; j < 4; j++)
@@ -75,20 +81,11 @@ void LSSreprint(LSS* lss)
 			putchar(lss->arr[i].c[j]);
 		}
 	}
-	// printf("\x1b[%zu;%zuH", beg.y, beg.x);
-	printf("\x1b[u");
-}
-
-void LSSreprint2(LSS* lss)
-{
-	for (size_t i = lss->pos; i < lss->size; i++)
-	{
-		for (size_t j = 0; j < 4; j++)
-		{
-			if (!lss->arr[i].c[j]) break;
-			putchar(lss->arr[i].c[j]);
-		}
-	}
+	const size_t pos = lss->pos;
+	lss->pos = lss->size;
+	gotoNewPos(lss);
+	printf("\e[0J");
+	lss->pos = pos;
 	gotoNewPos(lss);
 }
 
