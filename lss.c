@@ -153,3 +153,9 @@ void LSSright(LSS* lss)
 		// }
 	}
 }
+
+void LSSgotoend(LSS* lss)
+{
+	lss->pos = lss->size;
+	gotoNewPos(lss);
+}

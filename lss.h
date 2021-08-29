@@ -26,3 +26,4 @@ char* LSSgetstr(LSS* lss);
 char* LSSrelease(LSS* lss);
 void LSSleft(LSS* lss);
 void LSSright(LSS* lss);
+void LSSgotoend(LSS* lss);

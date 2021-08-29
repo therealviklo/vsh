@@ -168,7 +168,7 @@ void setColour(Colour colour)
 
 void clearScreen(void)
 {
-	execute("clear");
+	printf("\ec");
 }
 
 ScreenSize getScreenSize(void)
@@ -299,6 +299,7 @@ static SCact procSC(int c, LSS* lss)
 	{
 		case '\n':
 		{
+			LSSgotoend(lss);
 			putchar(c);
 		}
 		return SCA_BREAK;
